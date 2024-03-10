@@ -104,7 +104,7 @@ namespace API.Extensions
             User noelUser = new User
             {
                 UserName = $"{noel.FirstName!} {noel.Name}",
-                Email = "n.vonnegri@digital-zeit.de",
+                Email = $"{noel.Name}@{noel.FirstName!}.de",
                 Employee = noel,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
@@ -112,7 +112,7 @@ namespace API.Extensions
             User chantalUser = new User
             {
                 UserName = $"{chantal.FirstName!} {chantal.Name}",
-                Email = "c.kinzelmann@digital-zeit.de",
+                Email = $"{chantal.Name}@{chantal.FirstName!}.de",
                 Employee = chantal,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
@@ -120,7 +120,7 @@ namespace API.Extensions
             User danielUser = new User
             {
                 UserName = $"{daniel.FirstName!} {daniel.Name}",
-                Email = "d.vetter-gindele@digital-zeit.de",
+                Email = $"{daniel.Name}@{daniel.FirstName!}.de",
                 Employee = daniel,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
