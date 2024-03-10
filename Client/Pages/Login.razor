@@ -1,0 +1,57 @@
+﻿@inject IUserManager UserManager
+@inject NavigationManager NavManager
+@inject ToastNotification ToastNotification
+@page "/Login"
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 border">
+        <div class="mb-3 text-center">
+            <h3>Login</h3>
+        </div>
+        <div class="mb-3">
+            @if( userLogin ) {
+                <label>Username</label>
+            } else {
+                <label>EmployeeId</label>
+            }
+            <input @bind=model.UserName class="form-control" placeholder="Username" required />
+        </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <input @bind=model.Password type="password" class="form-control" placeholder="Password" required />
+        </div>
+        <div class="mb-3">
+            <label>Login as User: </label>
+            <input type="checkbox" @bind=userLogin />
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <input value="Login" class="btn btn-primary" @onclick="Authenticate" />
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationState { get; set; } = null!;
+    LoginRequestModel model = new();
+    bool userLogin = false;
+
+    protected override async Task OnInitializedAsync() {
+        var authState = await AuthenticationState;
+        if( authState.User.Identity?.IsAuthenticated ?? false )
+            NavManager.NavigateTo( "/" );
+    }
+
+    async Task Authenticate() {
+        model.ClaimRole = userLogin ? ClaimRole.User : ClaimRole.Employee;
+        bool loggedIn = await UserManager.LoginAsync( model );
+        if( !loggedIn ) {
+            ToastNotification.ShowError( "Login failed" );
+        } else {
+            NavManager.NavigateTo( uri: "/", forceLoad: true, replace: false ); //Muss geforced werden...
+        }
+
+    }
+
+
+}

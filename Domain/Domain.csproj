@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Project.Shared.NuGet</Title>
+    <Authors>Noel Freiherr von Negri</Authors>
+    <Company>digital-ZEIT GmbH</Company>
+    <Product>DLL for Project</Product>
+    <Description>Ein NuGet Paket für das Schulprojekt</Description>
+  </PropertyGroup>
+
+</Project>

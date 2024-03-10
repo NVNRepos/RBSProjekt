@@ -1,0 +1,25 @@
+﻿@using Domain.Tableau;
+
+<div class="tableau-item">
+    <!--
+    <a class="tableau-employee" href="/employee/@Model.EmployeeNumber"/>
+    -->
+    <div class="tableau-dot @Class"/>
+    <label>@Model.EmployeeNumber</label>
+    <label>@Model.DisplayName</label>
+</div>
+
+@code {
+    [Parameter] public EmployeePresentModel Model { get; set; } = null!;
+
+    string Class
+    => Model.PresentState switch
+    {
+        PresentState.None => "tableau-none",
+        PresentState.Present => "tableau-present",
+        PresentState.Absent => "tableau-absent",
+        _ => throw new System.Diagnostics.UnreachableException()
+    };
+
+
+}

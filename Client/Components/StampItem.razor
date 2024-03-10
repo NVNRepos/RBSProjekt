@@ -1,0 +1,26 @@
+﻿@using Domain.Terminal;
+@inject IStampService StampService;
+@inject ToastNotification ToastNotification;
+
+<div class="s-button">
+    <button type="button" class="btn @BtnClass btn-lg" @onclick="Stamp">@CurrentType.ToString()</button>
+</div>
+@code {
+    [Parameter] public StampType CurrentType { get; set; }
+
+    async Task Stamp() {
+        var result = await StampService.Stamp(CurrentType);
+
+        if (result.Success)
+            ToastNotification.ShowSuccess($"Successful stamp");
+        else
+            ToastNotification.ShowError($"Stamp failed. Reason: {result.ErrorMessage}");
+    }
+
+    public string BtnClass => CurrentType switch
+    {
+        StampType.In => "btn-success",
+        StampType.Out => "btn-danger",
+        _ => throw new System.Diagnostics.UnreachableException()
+    };
+}

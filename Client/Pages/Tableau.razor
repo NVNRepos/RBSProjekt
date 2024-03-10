@@ -1,0 +1,11 @@
+﻿@page "/Tableau"
+
+<PageTitle>Tableau</PageTitle>
+
+<div class="tableau">
+    <div class="tableau-items">
+        @foreach( var model in _employeePresentModels.Models ) {
+            <TableauItem Model="@model" />
+        }
+    </div>
+</div>

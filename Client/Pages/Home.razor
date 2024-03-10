@@ -1,0 +1,18 @@
+﻿@attribute [Authorize(Roles = "User,Employee")]
+@using Client.Extensions;
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello @displayName</h1>
+
+@code{
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationState {get; set;} = null!;
+
+    string displayName = "Unknown";
+    protected override async Task OnInitializedAsync(){
+        var authState = await AuthenticationState;
+        displayName = authState.User.GetDisplayName();
+    }
+}

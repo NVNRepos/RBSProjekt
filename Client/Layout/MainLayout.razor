@@ -1,0 +1,47 @@
+﻿@inherits LayoutComponentBase
+@inject IUserManager UserManager
+@inject NavigationManager NavManager
+
+<div class="page">
+
+    <AuthorizeView Roles="User,Employee">
+        <div class="sidebar">
+            <MainNavMenu />
+        </div>
+    </AuthorizeView>
+
+    <main>
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <input type="button" class="btn btn-primary" @onclick="Logout" value="Logout"/>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+
+    <Toast />
+</div>
+
+@code {
+    [CascadingParameter] 
+    Task<AuthenticationState> AuthenticationState { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync() {
+        var state = await AuthenticationState;
+        if( (!state.User.Identity?.IsAuthenticated) ?? false ) {
+            NavManager.NavigateTo("/Login");
+        }
+    }
+
+
+    async Task Logout() {
+        await UserManager.LogoutAsync();
+        NavManager.NavigateTo("/Login", forceLoad: true, replace: true);
+    }
+
+}
+

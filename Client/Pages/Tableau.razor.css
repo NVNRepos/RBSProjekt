@@ -1,0 +1,13 @@
+﻿.tableau{
+    padding: 0 10rem;
+    display: flex;
+    gap: 6rem;
+}
+.tableau-items {
+    display: flex;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    flex-grow: 1;
+}

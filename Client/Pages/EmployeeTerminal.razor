@@ -1,0 +1,14 @@
+﻿@attribute [Authorize( Roles = "Employee" )]
+@page "/EmployeeTerminal"
+
+<PageTitle>PC-Terminal</PageTitle>
+
+<div class="e-terminal">
+    <div class="e-terminal-items">
+        @foreach( StampType type in Enum.GetValues<StampType>() ) {
+            <StampItem CurrentType="@type" />
+        }
+    </div>
+</div>
+
+
