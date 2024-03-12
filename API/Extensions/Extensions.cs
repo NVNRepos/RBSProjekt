@@ -1,18 +1,67 @@
-﻿using API.Data.Context;
+﻿using System.Text;
+using API.Data.Context;
 using API.Data.Entities;
 using API.Data.Identity;
+using API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Extensions
 {
     public static class Extensions
     {
 
-        public static void AddSwaggerConfigurations(this IServiceCollection services)
+        public static void AddServices(this WebApplicationBuilder builder)
         {
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(opt =>
+            builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
+            builder.Services.AddSingleton<ITimeProviderService, TimeProviderService>();
+            builder.Services.AddTransient<ITerminalService, TerminalService>();
+            builder.Services.AddTransient<ITableauService, TableauService>();
+        }
+
+        public static void AddDbContext(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddDbContext<ProjectContext>(
+                opt =>
+            {
+                opt.UseSqlServer(
+                connectionString: builder.Configuration.GetConnectionString("Default"));
+            });
+        }
+
+        public static void AddIdentity(this WebApplicationBuilder builder){
+            builder.Services.AddIdentity<User, IdentityRole>(IdentityOptionsSetter)
+            .AddEntityFrameworkStores<ProjectContext>()
+            .AddDefaultTokenProviders();
+        }
+
+
+        public static void AddAuthentication(this WebApplicationBuilder builder, string secret){
+            builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(opt =>
+            {
+                opt.SaveToken = true;
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidAudience = builder.Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                    ClockSkew = new TimeSpan(0, 0, 5)
+                };
+            });
+        }
+
+        public static void AddSwaggerConfigurations(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(opt =>
             {
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -36,7 +85,7 @@ namespace API.Extensions
             });
         }
 
-        public static void IdentityOptionsSetter(IdentityOptions options)
+        private static void IdentityOptionsSetter(IdentityOptions options)
         {
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;
@@ -126,13 +175,13 @@ namespace API.Extensions
             };
 
             Task<IdentityResult> noelResult = userManager.CreateAsync(noelUser, noel.Password);
-            noelResult.Wait();
+            noelResult.GetAwaiter().GetResult();
 
             Task<IdentityResult> chantalResult = userManager.CreateAsync(chantalUser, chantal.Password);
-            chantalResult.Wait();
+            chantalResult.GetAwaiter().GetResult();
 
             Task<IdentityResult> danielResult = userManager.CreateAsync(danielUser, daniel.Password);
-            danielResult.Wait();
+            danielResult.GetAwaiter().GetResult();
         }
     }
 }

@@ -1,14 +1,47 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Client.Authentication;
+using Client.Services;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace Client.Extensions
 {
     public static class Extension
     {
 
+        public static void AddHttpConfigurations(this WebAssemblyHostBuilder builder){
+            builder.Services.AddTransient<AuthenticationHandler>();
+            builder.Services.AddHttpClient( ClientDefaults.SERVER_API ).ConfigureHttpClient(
+                c => c.BaseAddress = new Uri( builder.Configuration[ClientDefaults.SERVER_URL] ?? string.Empty ) )
+                .AddHttpMessageHandler<AuthenticationHandler>();    
+        }
+
+        public static void AddStorage(this WebAssemblyHostBuilder builder, UserStorageType storageType){
+            switch (storageType)
+            {
+                case UserStorageType.Session:
+                    builder.Services.AddBlazoredSessionStorageAsSingleton();
+                    break;
+                case UserStorageType.Local:
+                    builder.Services.AddBlazoredLocalStorageAsSingleton();
+                    break;
+                default: throw new System.Diagnostics.UnreachableException();
+            }
+        }
+
+        public static void AddServices(this WebAssemblyHostBuilder builder){
+            //DO NOT CHANGE THIS LINE. There are downcastings
+            builder.Services.AddSingleton<AuthenticationStateProvider, ClientAuthenticationStateProvider>();
+            builder.Services.AddScoped<IUserManager, UserSessionStorageManager>();
+
+            builder.Services.AddScoped<ToastNotification>();
+            builder.Services.AddTransient<IStampService, StampService>();
+            builder.Services.AddTransient<ITableauService, TableauService>();
+        }
         /// <summary>
         /// Sets an item in the client session storage
         /// </summary>
@@ -78,5 +111,10 @@ namespace Client.Extensions
 
         public static HttpClient CreateAPIClient(this IHttpClientFactory factory)
             => factory.CreateClient(ClientDefaults.SERVER_API);
+    }
+
+    public enum UserStorageType{
+        Session,
+        Local
     }
 }

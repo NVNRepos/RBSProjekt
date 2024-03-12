@@ -25,7 +25,6 @@ namespace API.Controllers.AnwesenheitsMonitor
             try
             {
                 var result = await _mediator.Send(new TableauRequest());
-                int count = result.Models.Count();
                 return !result.Models.Any() ? NoContent() : Ok(result);
             }
             catch (Exception ex)

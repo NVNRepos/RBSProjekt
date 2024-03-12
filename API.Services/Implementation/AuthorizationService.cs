@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using API.Data.Context;
 using API.Data.Entities;
@@ -79,11 +78,11 @@ namespace API.Services
             return WriteToken(token);
         }
 
-        public async Task<bool> CheckCredentials(LoginRequestModel loginRequest)
+        public Task<bool> CheckCredentials(LoginRequestModel loginRequest)
             => loginRequest.ClaimRole switch
             {
-                ClaimRole.User => await CheckUser(loginRequest),
-                ClaimRole.Employee => await CheckEmployee(loginRequest),
+                ClaimRole.User => CheckUser(loginRequest),
+                ClaimRole.Employee => CheckEmployee(loginRequest),
                 _ => throw new System.Diagnostics.UnreachableException()
             };
 
