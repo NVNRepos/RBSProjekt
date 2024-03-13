@@ -4,7 +4,7 @@ using Client.Services;
 using Domain.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Client.Authentication
+namespace Client.Authorization
 {
     public abstract class UserStorageManager : IUserManager
     {

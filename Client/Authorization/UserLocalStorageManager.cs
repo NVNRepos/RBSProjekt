@@ -4,7 +4,7 @@ using Domain.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using static Client.ClientDefaults;
 
-namespace Client.Authentication
+namespace Client.Authorization
 {
     public class UserLocalStorageManager : UserStorageManager
     {

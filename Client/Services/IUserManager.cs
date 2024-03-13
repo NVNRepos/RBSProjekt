@@ -5,9 +5,7 @@ namespace Client.Services
 {
     public interface IUserManager
     {
-        private static readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
-
-        public static ClaimsPrincipal Anonymous => _anonymous;
+        public static ClaimsPrincipal Anonymous => new(new ClaimsIdentity());
         public Task<bool> LoginAsync(LoginRequestModel loginRequest);
 
         public Task LogoutAsync();

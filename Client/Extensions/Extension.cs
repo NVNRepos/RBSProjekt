@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Client.Authentication;
+using Client.Authorization;
 using Client.Services;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
@@ -20,34 +20,24 @@ namespace Client.Extensions
                 .AddHttpMessageHandler<AuthenticationHandler>();    
         }
 
-        public static void AddStorage(this WebAssemblyHostBuilder builder, UserStorageType storageType){
+        public static void AddStoragedServices(this WebAssemblyHostBuilder builder, UserStorageType storageType){
             switch (storageType)
             {
                 case UserStorageType.Session:
                     builder.Services.AddBlazoredSessionStorageAsSingleton();
+                    builder.Services.AddScoped<IUserManager, UserSessionStorageManager>();
+                    builder.Services.AddSingleton<AuthenticationStateProvider, SessionAuthenticationStateProvider>();
                     break;
                 case UserStorageType.Local:
                     builder.Services.AddBlazoredLocalStorageAsSingleton();
+                    builder.Services.AddScoped<IUserManager, UserLocalStorageManager>();
+                    builder.Services.AddSingleton<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
                     break;
                 default: throw new System.Diagnostics.UnreachableException();
             }
         }
 
-        public static void AddServices(this WebAssemblyHostBuilder builder, UserStorageType storageType){
-            //DO NOT CHANGE THIS LINE. There are downcastings
-            builder.Services.AddSingleton<AuthenticationStateProvider, ClientAuthenticationStateProvider>();
-            
-            switch (storageType)
-            {
-                case UserStorageType.Session:
-                    builder.Services.AddScoped<IUserManager, UserSessionStorageManager>();
-                    break;
-                case UserStorageType.Local:
-                    builder.Services.AddScoped<IUserManager, UserLocalStorageManager>();
-                    break;
-                default: throw new System.Diagnostics.UnreachableException();
-            }
-            
+        public static void AddServices(this WebAssemblyHostBuilder builder){
             builder.Services.AddScoped<ToastNotification>();
             builder.Services.AddTransient<IStampService, StampService>();
             builder.Services.AddTransient<ITableauService, TableauService>();
@@ -122,6 +112,12 @@ namespace Client.Extensions
 
         public static HttpClient CreateAPIClient(this IHttpClientFactory factory)
             => factory.CreateClient(ClientDefaults.SERVER_API);
+
+        public static UserStorageType UserStorageTypeFromInt(int type)
+            => type switch{
+                1 => UserStorageType.Local,
+                _ => UserStorageType.Session
+            };
     }
 
     public enum UserStorageType{

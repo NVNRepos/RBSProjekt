@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using Client.Services;
-namespace Client.Authentication
+namespace Client.Authorization
 {
     /// <summary>
     /// Like angular http interceptor 
