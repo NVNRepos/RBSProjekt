@@ -33,15 +33,26 @@ namespace Client.Extensions
             }
         }
 
-        public static void AddServices(this WebAssemblyHostBuilder builder){
+        public static void AddServices(this WebAssemblyHostBuilder builder, UserStorageType storageType){
             //DO NOT CHANGE THIS LINE. There are downcastings
             builder.Services.AddSingleton<AuthenticationStateProvider, ClientAuthenticationStateProvider>();
-            builder.Services.AddScoped<IUserManager, UserSessionStorageManager>();
-
+            
+            switch (storageType)
+            {
+                case UserStorageType.Session:
+                    builder.Services.AddScoped<IUserManager, UserSessionStorageManager>();
+                    break;
+                case UserStorageType.Local:
+                    builder.Services.AddScoped<IUserManager, UserLocalStorageManager>();
+                    break;
+                default: throw new System.Diagnostics.UnreachableException();
+            }
+            
             builder.Services.AddScoped<ToastNotification>();
             builder.Services.AddTransient<IStampService, StampService>();
             builder.Services.AddTransient<ITableauService, TableauService>();
         }
+
         /// <summary>
         /// Sets an item in the client session storage
         /// </summary>

@@ -10,8 +10,9 @@ builder.RootComponents.Add<HeadOutlet>( "head::after" );
 
 builder.AddHttpConfigurations();
 
+// Currently only Sessionstorage is suppported
 builder.AddStorage(UserStorageType.Session);
-builder.AddServices();
+builder.AddServices(UserStorageType.Session);
 
 //From microsoft template to AuthenticationStateProvider
 builder.Services.AddCascadingAuthenticationState();
